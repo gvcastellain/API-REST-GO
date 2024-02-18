@@ -1,14 +1,12 @@
 package main
 
 import (
-	"api_rest/database"
-	"api_rest/server"
+	"teste/database"
+	"teste/routes"
 )
 
 func main() {
 	database.StartDB()
 
-	server := server.NewServer()
-
-	server.Run()
+	routes.RunRoutes()
 }

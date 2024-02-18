@@ -1,33 +1,40 @@
 package database
 
 import (
-	"log"
-	"time"
+	"database/sql"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *gorm.DB
+var db *sql.DB
 
 func StartDB() {
-	str := "host=localhost port=25432 user=admin dbname=movies sslmode=disable password=123456"
-
-	database, err := gorm.Open(postgres.Open(str), &gorm.Config{})
-
+	var err error
+	db, err = sql.Open("mysql", "root:123456@/")
 	if err != nil {
-		log.Fatal("error : ", err)
+		panic(err)
 	}
 
-	db = database
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS API")
+	if err != nil {
+		panic(err)
+	}
 
-	config, _ := db.DB()
+	_, err = db.Exec("USE API")
+	if err != nil {
+		panic(err)
+	}
 
-	config.SetMaxIdleConns(10)
-	config.SetMaxOpenConns(100)
-	config.SetConnMaxLifetime(time.Hour)
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS usuarios (
+		id INTEGER AUTO_INCREMENT,
+		nome VARCHAR(80),
+		PRIMARY KEY (id)
+	)`)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func GetDatabase() *gorm.DB {
+func GetDB() *sql.DB {
 	return db
 }
